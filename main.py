@@ -1,9 +1,17 @@
-import os
 import argparse
+import os
+
+from pyre_utils import new_pyre_config, new_watchman_config, start_watchman, start_pyre_server, pyre_infer, \
+    pyre_server_shutdown
 
 
 def pyre_pipeline(repo_path):
-
+    new_pyre_config(repo_path)
+    new_watchman_config(repo_path)
+    start_watchman(repo_path)
+    start_pyre_server(repo_path)
+    pyre_infer(repo_path)
+    pyre_server_shutdown(repo_path)
 
 
 def walk_folder(project_path):
@@ -29,6 +37,7 @@ def walk_folder(project_path):
     for repo in repo_list:
         if os.path.exists(repo):
             pyre_pipeline(repo)
+            print("Pyre Infer in %s has done..." % repo)
 
 
 
