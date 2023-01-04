@@ -47,6 +47,7 @@ def main():
     args = parser.parse_args()
     project_path = args.o
     print(project_path)
+    walk_folder(project_path)
 
 
 if __name__ == '__main__':
