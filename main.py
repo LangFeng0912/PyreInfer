@@ -1,5 +1,6 @@
 import argparse
 import os
+import pandas as pd
 
 from pyre_utils import new_pyre_config, new_watchman_config, start_watchman, start_pyre_server, pyre_infer, \
     pyre_server_shutdown
@@ -17,28 +18,32 @@ def pyre_pipeline(repo_path):
 def walk_folder(project_path):
     author_list = []
     if os.path.exists(project_path):
-        g = os.walk(project_path)
-        for path, dir_list, file_list in g:
-            for dir_name in dir_list:
-                # print(os.path.join(path, dir_name))
-                author_list.append(os.path.join(path, dir_name))
+        files = os.listdir(project_path)
+        for file in files:
+            m = os.path.join(project_path, file)
+            if (os.path.isdir(m)):
+                author_list.append(m)
     else:
         print("Error: Project Path %s does not exist", project_path)
+    authd = pd.DataFrame(data=author_list)
+    authd.to_csv('authorlist.csv')
     repo_list = []
     for author_path in author_list:
         if os.path.exists(author_path):
-            g = os.walk(author_path)
-            for path, dir_list, file_list in g:
-                for dir_name in dir_list:
-                    # print(os.path.join(path, dir_name))
-                    repo_list.append(os.path.join(author_path, dir_name))
+            files = os.listdir(author_path)
+            for file in files:
+                m = os.path.join(author_path, file)
+                if (os.path.isdir(m)):
+                    repo_list.append(m)
+
         else:
             print("Error: Author Path %s does not exist", author_path)
+    repod = pd.DataFrame(data=repo_list)
+    repod.to_csv('repolist.csv')
     for repo in repo_list:
         if os.path.exists(repo):
             pyre_pipeline(repo)
             print("Pyre Infer in %s has done..." % repo)
-
 
 
 def main():
