@@ -1,8 +1,6 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from os.path import join, exists
-
-from libcst import List
 
 import json
 import subprocess
