@@ -2,6 +2,7 @@ import argparse
 import os
 import pandas as pd
 import time
+import csv
 
 from pyre_utils import new_pyre_config, new_watchman_config, start_watchman, start_pyre_server, pyre_infer, \
     pyre_server_shutdown
@@ -41,15 +42,26 @@ def walk_folder(project_path):
             print("Error: Author Path %s does not exist", author_path)
     repod = pd.DataFrame(data=repo_list)
     repod.to_csv('repolist.csv')
+    path  = "producelist.csv"
+    df = pd.read_csv("producelist.csv")
     i = 1
     for repo in repo_list:
         if os.path.exists(repo):
+            if(repo in df.iloc[:,0].values):
+                print("Repo %s has been processed before.. Skipping" % repo)
+                print("Project %s is finished..." % i)
+                i = i+1
+                continue
             if i%100 == 0:
                 print("sleeping...")
                 time.sleep(5)
             pyre_pipeline(repo)
             print("Pyre Infer in %s has done..." % repo)
             print("Project %s is finished..." % i)
+            with open(path,'a+',newline='') as f:
+                csv_write = csv.writer(f)
+                data_row = [repo,"1"]
+                csv_write.writerow(data_row)
             i = i+1
 
 
